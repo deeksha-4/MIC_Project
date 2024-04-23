@@ -45,6 +45,7 @@ def plot_image_with_mask(image_list, mask_list, num_pairs = 4):
         plt.imshow(mask)
         plt.title(f'Segmented Image, index = {idx}')
         plt.axis('off')
+        plt.pause(4)
         del img, mask
 
 def to_tensor(image_list, mask_list):
@@ -52,6 +53,33 @@ def to_tensor(image_list, mask_list):
     tensor_masks = tf.convert_to_tensor(tf.cast(np.array(mask_list), dtype= tf.float32))/255
     return tensor_images, tensor_masks
 
+def dice_coeff(y_true, y_pred, smooth = 1):
+    intersection = K.sum(y_true*y_pred, axis = -1)
+    union = K.sum(y_true, axis = -1) + K.sum(y_pred, axis = -1)
+    dice_coeff = (2*intersection+smooth) / (union + smooth)
+    return dice_coeff
+#Function to plot the predictions with orginal image, original mask and predicted mask
+def plot_preds(idx):
+    plt.figure(figsize = (15, 15))
+    test_img = images_test[idx]
+    test_img = tf.expand_dims(test_img, axis = 0)
+    test_img = tf.expand_dims(test_img, axis = -1)
+    pred = unet.predict(test_img)
+    pred = pred.squeeze()
+    thresh = pred > 0.5
+    plt.subplot(1,3,1)
+    plt.imshow(images_test[idx])
+    plt.title(f'Original Image {idx}')
+    plt.axis('off')
+    plt.subplot(1,3,2)
+    plt.imshow(masks_test[idx])
+    plt.title('Actual Mask')
+    plt.axis('off')
+    plt.subplot(1,3,3)
+    plt.imshow(thresh)
+    plt.title('Predicted Mask')
+    plt.axis('off')
+    
 if __name__ == "__main__":
     strategy = tf.distribute.MirroredStrategy()
     image_dir = 'dataset/images/'
@@ -81,3 +109,51 @@ if __name__ == "__main__":
     print(f'The length of images and masks for training is {len(images_train)} and {len(masks_train)} respectively')
     print(f'The length of images and masks for validation is {len(images_val)} and {len(masks_val)} respectively')
     print(f'The length of images and masks for testing is {len(images_test)} and {len(masks_test)} respectively')
+    # plot_image_with_mask(images_train, masks_train)
+    #Converting the list of tensors into batches to efficiently train the model, computation-wise
+    batch_size = 32
+
+    train_data = tf.data.Dataset.from_tensor_slices((images_train, masks_train))
+    train_data = train_data.batch(batch_size)
+
+    val_data = tf.data.Dataset.from_tensor_slices((images_val, masks_val))
+    val_data = val_data.batch(batch_size)
+
+    test_data = tf.data.Dataset.from_tensor_slices((images_test, masks_test))
+    test_data = test_data.batch(batch_size)
+    with strategy.scope():
+        unet = unet()
+        unet.compile(loss = 'binary_crossentropy',
+                optimizer = 'adam',
+                metrics = ['accuracy', dice_coeff])
+    unet.summary()
+    early_stopping = EarlyStopping(monitor = 'val_loss', patience = 3, restore_best_weights = True)
+    unet_history = unet.fit(train_data, validation_data = [val_data], epochs = 50, callbacks = [early_stopping])
+
+    #Plotting the loss and accuracy during training and validation
+    plt.figure(figsize = (18, 9))
+    plt.subplot(1,3,1)
+    plt.plot(unet_history.history['loss'])
+    plt.plot(unet_history.history['val_loss'])
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.title('Training vs Validation loss')
+    plt.legend(['Training Loss', 'Validation Loss'])
+    plt.subplot(1,3,2)
+    plt.plot(unet_history.history['accuracy'])
+    plt.plot(unet_history.history['val_accuracy'])
+    plt.title('Training vs Validation accuracy')
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy')
+    plt.legend(['Training Accuracy', 'Validation Accuracy'])
+    plt.subplot(1,3,3)
+    plt.plot(unet_history.history['dice_coeff'])
+    plt.plot(unet_history.history['val_dice_coeff'])
+    plt.title('Training vs Validation Dice Coefficient')
+    plt.xlabel('Epochs')
+    plt.ylabel('Dice Coefficient')
+    plt.legend(['Training Dice Coefficient', 'Validation Coefficient'])
+    #evaluating the model, we got 89.54% accuracy. Pretty Good!
+    unet.evaluate(test_data)    
+    for i in [random.randint(0, 2000) for i in range(10)]:
+        plot_preds(i)
