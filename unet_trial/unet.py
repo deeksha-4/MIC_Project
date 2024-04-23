@@ -148,8 +148,10 @@ if __name__ == '__main__':
     learning_rate = 1e-5
     
     # Instantiate your dataset classes for training and testing
-    train_dataset = CustomDataset("../dataset/OTU_2D/train", transform=transform)
-    test_dataset = CustomDataset("../dataset/OTU_2D/test", transform=transform)
+    # train_dataset = CustomDataset("../dataset/OTU_2D/train", transform=transform)
+    # test_dataset = CustomDataset("../dataset/OTU_2D/test", transform=transform)
+    train_dataset = CustomDataset("train/", transform=transform)
+    test_dataset = CustomDataset("test/", transform=transform)
 
     # Create data loaders for training and testing data
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
