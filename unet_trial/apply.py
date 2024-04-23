@@ -53,11 +53,34 @@ def to_tensor(image_list, mask_list):
     tensor_masks = tf.convert_to_tensor(tf.cast(np.array(mask_list), dtype= tf.float32))/255
     return tensor_images, tensor_masks
 
-def dice_coeff(y_true, y_pred, smooth = 1):
-    intersection = K.sum(y_true*y_pred, axis = -1)
-    union = K.sum(y_true, axis = -1) + K.sum(y_pred, axis = -1)
-    dice_coeff = (2*intersection+smooth) / (union + smooth)
-    return dice_coeff
+def dice_coeff(y_true, y_pred, smooth=1):
+    tensor_rank_t = tf.rank(y_true)
+    tensor_rank_p = tf.rank(y_pred)
+
+    # Check if the rank is 4
+    is_four_dimensions_p = tf.equal(tensor_rank_p, 4)
+    is_four_dimensions_t = tf.equal(tensor_rank_t,4)
+    # If you're in a TensorFlow session, you can evaluate the result
+    with tf.compat.v1.Session() as sess:
+        is_four_dimensions_value_p = sess.run(is_four_dimensions_p)
+    with tf.compat.v1.Session() as sess:
+        is_four_dimensions_value_t = sess.run(is_four_dimensions_t)
+    if is_four_dimensions_value_t:
+        y_true = tf.squeeze(y_true, axis=-1)  # Squeeze the last dimension if it exists
+    if is_four_dimensions_value_p:
+        y_pred = tf.squeeze(y_pred, axis=-1)  # Squeeze the last dimension if it exists
+    
+    intersection = tf.reduce_sum(y_true * y_pred, axis=[1, 2])  # Compute intersection
+    union = tf.reduce_sum(y_true, axis=[1, 2]) + tf.reduce_sum(y_pred, axis=[1, 2])  # Compute union
+
+    dice_coefficient = (2 * intersection + smooth) / (union + smooth)
+    return dice_coefficient
+# Setting dice coefficient to evaluate our model
+# def dice_coeff(y_true, y_pred, smooth = 1):
+#     intersection = tf.reduce_sum(y_true*y_pred, axis = -1)
+#     union = tf.reduce_sum(y_true, axis = -1) + tf.reduce_sum(y_pred, axis = -1)
+#     dice_coeff = (2*intersection+smooth) / (union + smooth)
+#     return dice_coeff
 #Function to plot the predictions with orginal image, original mask and predicted mask
 def plot_preds(idx):
     plt.figure(figsize = (15, 15))
@@ -90,7 +113,7 @@ if __name__ == "__main__":
     print(len(imgsort), len(masksort))
     images, masks = load_images(imgsort, masksort, image_dir, mask_dir)
     print(len(images), len(masks))
-    plot_image_with_mask(images, masks, num_pairs = 4)
+    # plot_image_with_mask(images, masks, num_pairs = 4)
     images, masks = to_tensor(images, masks)
     train_split = tf.cast(tf.round(len(images)*0.6) - 1, dtype = tf.int32)
     test_val_split = tf.cast(tf.round(len(images)*0.2), dtype = tf.int32)
