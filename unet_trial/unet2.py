@@ -1,0 +1,189 @@
+import torch
+import torch.nn as nn
+from torchvision import models
+from torch.nn.functional import relu
+from torch.utils.data import DataLoader, Dataset
+from torchvision.transforms import ToTensor
+import os
+from PIL import Image
+import tensorflow as tf
+import tensorflow_datasets as tfds
+
+IMG_SIZE = 572
+def augment(image, label):
+  image = tf.cast(image, tf.float32)
+  image = tf.image.resize(image, [IMG_SIZE, IMG_SIZE])
+  image = (image / 255.0)
+  image = tf.image.random_crop(image, size=[IMG_SIZE, IMG_SIZE, 3])
+  image = tf.image.random_brightness(image, max_delta=0.5)
+  return image, label
+
+class Unet(nn.Module):
+    def __init__(self, no_classes): # no of classes is for the segmentation task
+        super().__init__()
+        # inherits from nn.Module, initializes based on super class
+
+        # encoder layer
+        # each layer- 2 conv layesr with relu + max pooling layer
+        # last layer - no max pooling
+        # input 572x572x3
+        self.l1c1 = nn.Conv2d(3, 64, kernel_size=3, padding=1)
+        # using padding 1 instead of 0(mentioned in paper) to avoid post processing
+        self.l1c2 = nn.Conv2d(64, 64, kernel_size=3, padding=1)
+        self.l1p = nn.MaxPool2d(kernel_size=2, stride=2)
+
+        # input 284x284x64
+        self.l2c1 = nn.Conv2d(64, 128, kernel_size=3, padding=1) # output: 282x282x128
+        self.l2c2 = nn.Conv2d(128, 128, kernel_size=3, padding=1) # output: 280x280x128
+        self.l2p = nn.MaxPool2d(kernel_size=2, stride=2) # output: 140x140x128
+
+        # input: 140x140x128
+        self.l3c1 = nn.Conv2d(128, 256, kernel_size=3, padding=1) # output: 138x138x256
+        self.l3c2 = nn.Conv2d(256, 256, kernel_size=3, padding=1) # output: 136x136x256
+        self.l3p = nn.MaxPool2d(kernel_size=2, stride=2) # output: 68x68x256
+
+        # input: 68x68x256
+        self.l4c1 = nn.Conv2d(256, 512, kernel_size=3, padding=1) # output: 66x66x512
+        self.l4c2 = nn.Conv2d(512, 512, kernel_size=3, padding=1) # output: 64x64x512
+        self.l4p = nn.MaxPool2d(kernel_size=2, stride=2) # output: 32x32x512
+
+        # input: 32x32x512
+        self.l5c1 = nn.Conv2d(512, 1024, kernel_size=3, padding=1) # output: 30x30x1024
+        self.l5c2 = nn.Conv2d(1024, 1024, kernel_size=3, padding=1) # output: 28x28x1024
+        # no pooling cos last layer
+
+        # decoder - upsampling + 2 conv layers
+        # one final 1x1 conv for final outptu
+        self.upconv1 = nn.ConvTranspose2d(1024, 512, kernel_size=2, stride=2)
+        self.d11 = nn.Conv2d(1024, 512, kernel_size=3, padding=1)
+        self.d12 = nn.Conv2d(512, 512, kernel_size=3, padding=1)
+
+        self.upconv2 = nn.ConvTranspose2d(512, 256, kernel_size=2, stride=2)
+        self.d21 = nn.Conv2d(512, 256, kernel_size=3, padding=1)
+        self.d22 = nn.Conv2d(256, 256, kernel_size=3, padding=1)
+
+        self.upconv3 = nn.ConvTranspose2d(256, 128, kernel_size=2, stride=2)
+        self.d31 = nn.Conv2d(256, 128, kernel_size=3, padding=1)
+        self.d32 = nn.Conv2d(128, 128, kernel_size=3, padding=1)
+
+        self.upconv4 = nn.ConvTranspose2d(128, 64, kernel_size=2, stride=2)
+        self.d41 = nn.Conv2d(128, 64, kernel_size=3, padding=1)
+        self.d42 = nn.Conv2d(64, 64, kernel_size=3, padding=1)
+
+        # Output layer, 1x1 conv to map image to seg mask
+        self.outconv = nn.Conv2d(64, no_classes, kernel_size=1)
+
+
+    def forward(self, x):
+        # encoder
+        xe11 = relu(self.l1c1(x))
+        xe12 = relu(self.l1c2(xe11))
+        xp1 = self.l1p(xe12)
+
+        xe21 = relu(self.l2c1(xp1))
+        xe22 = relu(self.l2c2(xe21))
+        xp2 = self.l2p(xe22)
+
+        xe31 = relu(self.l3c1(xp2))
+        xe32 = relu(self.l3c2(xe31))
+        xp3 = self.l3p(xe32)
+
+        xe41 = relu(self.l4c1(xp3))
+        xe42 = relu(self.l4c2(xe41))
+        xp4 = self.l4p(xe42)
+
+        xe51 = relu(self.l5c1(xp4))
+        xe52 = relu(self.l5c2(xe51))
+        
+        # Decoder
+        xu1 = self.upconv1(xe52)
+        xu11 = torch.cat([xu1, xe42], dim=1)
+        xd11 = relu(self.d11(xu11))
+        xd12 = relu(self.d12(xd11))
+
+        xu2 = self.upconv2(xd12)
+        xu22 = torch.cat([xu2, xe32], dim=1)
+        xd21 = relu(self.d21(xu22))
+        xd22 = relu(self.d22(xd21))
+
+        xu3 = self.upconv3(xd22)
+        xu33 = torch.cat([xu3, xe22], dim=1)
+        xd31 = relu(self.d31(xu33))
+        xd32 = relu(self.d32(xd31))
+
+        xu4 = self.upconv4(xd32)
+        xu44 = torch.cat([xu4, xe12], dim=1)
+        xd41 = relu(self.d41(xu44))
+        xd42 = relu(self.d42(xd41))
+
+        # Output layer
+        out = self.outconv(xd42)
+
+        return out
+    
+class CustomDataset(tf.keras.utils.Sequence):
+    def __init__(self, image_paths, label_paths, IMG_SIZE):
+        self.image_paths = image_paths
+        self.label_paths = label_paths
+        self.IMG_SIZE = IMG_SIZE
+
+    def __len__(self):
+        return len(self.image_paths)
+
+    def __getitem__(self, index):
+        image_path = self.image_paths[index]
+        label_path = self.label_paths[index]
+
+        # Load image and label
+        image = tf.io.read_file(image_path)
+        image = tf.image.decode_png(image, channels=3)  # Assuming PNG images with 3 channels
+        label = tf.io.read_file(label_path)
+        label = tf.image.decode_png(label, channels=1)  # Assuming PNG label images with 1 channel
+
+        # Apply augmentation (including resizing) to the image
+        image, label = augment(image, label)
+
+        return image, label
+
+if __name__ == '__main__':
+    transform = ToTensor()  # Example transformation
+
+    no_classes = 2
+    num_epochs = 5
+    batch_size = 1
+    learning_rate = 1e-5
+    
+    # Instantiate your dataset classes for training and testing
+    train_dataset = CustomDataset("train/images/", "train/masks/", IMG_SIZE)
+    test_dataset = CustomDataset("test/images","test/masks/", IMG_SIZE)
+
+    # Create data loaders for training and testing data
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+
+    # Instantiate your model
+    model = Unet(no_classes)
+
+    # Define loss function and optimizer
+    criterion = nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+
+    # Training loop
+    for epoch in range(num_epochs):
+        model.train()
+        for images, masks in train_loader:
+            optimizer.zero_grad()
+            outputs = model(images)
+            loss = criterion(outputs, masks)
+            loss.backward()
+            optimizer.step()
+
+        print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item()}')
+
+    # Testing loop
+    model.eval()
+    with torch.no_grad():
+        for images, masks in test_loader:
+            outputs = model(images)
+            # Evaluate your model, compute metrics, etc.
+
