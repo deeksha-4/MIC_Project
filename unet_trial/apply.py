@@ -129,11 +129,10 @@ if __name__ == "__main__":
 
     del images, masks
 
-    print(f'The length of images and masks for training is {len(images_train)} and {len(masks_train)} respectively')
-    print(f'The length of images and masks for validation is {len(images_val)} and {len(masks_val)} respectively')
-    print(f'The length of images and masks for testing is {len(images_test)} and {len(masks_test)} respectively')
+    # print(f'The length of images and masks for training is {len(images_train)} and {len(masks_train)} respectively')
+    # print(f'The length of images and masks for validation is {len(images_val)} and {len(masks_val)} respectively')
+    # print(f'The length of images and masks for testing is {len(images_test)} and {len(masks_test)} respectively')
     # plot_image_with_mask(images_train, masks_train)
-    #Converting the list of tensors into batches to efficiently train the model, computation-wise
     batch_size = 32
 
     train_data = tf.data.Dataset.from_tensor_slices((images_train, masks_train))
@@ -146,9 +145,7 @@ if __name__ == "__main__":
     test_data = test_data.batch(batch_size)
     with strategy.scope():
         unet = unet()
-        unet.compile(loss = 'binary_crossentropy',
-                optimizer = 'adam',
-                metrics = ['accuracy', dice_coeff])
+        unet.compile(loss = 'binary_crossentropy',optimizer = 'adam',metrics = ['accuracy', dice_coeff])
     unet.summary()
     early_stopping = EarlyStopping(monitor = 'val_loss', patience = 3, restore_best_weights = True)
     unet_history = unet.fit(train_data, validation_data = [val_data], epochs = 50, callbacks = [early_stopping])
@@ -176,7 +173,6 @@ if __name__ == "__main__":
     plt.xlabel('Epochs')
     plt.ylabel('Dice Coefficient')
     plt.legend(['Training Dice Coefficient', 'Validation Coefficient'])
-    #evaluating the model, we got 89.54% accuracy. Pretty Good!
     unet.evaluate(test_data)    
     for i in [random.randint(0, 2000) for i in range(10)]:
         plot_preds(i)
