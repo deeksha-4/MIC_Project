@@ -14,7 +14,7 @@
     
 Image segmentation plays a vital role in healthcare for extracting key information from complex images of tissues and organs .
 Our focus is on a specific paper in this field, which provides an innovative method for extracting information from
-ovarian tissues. The paper chosen is Orian Tumor Ultrasound Image Segmentation
+ovarian tissues. The paper chosen is Ovarian Tumor Ultrasound Image Segmentation
 with Deep Neural Networks.
 \end{frame}
 \begin{frame}{Existing Technology in the Field}
@@ -57,7 +57,7 @@ with Deep Neural Networks.
         \includegraphics[width=\textwidth]{cunet.jpg}
         \caption{The CU-Net}
         \label{fig:b}
-\end{figure}
+    \end{figure}
 \end{frame}
 \begin{frame}{Architecture of UNet}
     \begin{enumerate}
@@ -114,6 +114,31 @@ with Deep Neural Networks.
     \end{figure}
 \end{frame}
 
+
+\begin{frame}{Predicted Masks : UNet}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=\textwidth]{unet_output.jpeg}
+        % \caption{}
+        % \label{fig:unet_pic}
+    \end{figure}
+\end{frame}
+\begin{frame}{Predicted Masks : CUNet}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=\textwidth]{output_cunet.png}
+        % \caption{}
+        % \label{fig:unet_pic}
+    \end{figure}
+\end{frame}
+\begin{frame}{Predicted Masks : PCUNet}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=\textwidth]{pcunet_output.jpeg}
+        % \caption{}
+        % \label{fig:unet_pic}
+    \end{figure}
+\end{frame}
 \begin{frame}{Summary}
     \begin{table}[htbp]
         \centering
@@ -132,7 +157,6 @@ with Deep Neural Networks.
         \end{table}
         Clearly the PCUNet has better performance metrics than the CUNet and UNet models.
 \end{frame}
-
 % \begin{frame}{Improvements and Other Techniques}
 % One improvement that can be made in the graph construction, is that instead of using infinite weight edges for seeded $t$-links, we could instead assign infinite weight edges for the seeded vertices, and use a Gaussian Mixture Model with respect to these vertices and assign edges from the source or sink to other vertices, proportional to the value using the GMM.\\
 % \vspace{20pt}

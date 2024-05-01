@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2024.3.17)  2 MAY 2024 00:39
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2024.3.17)  2 MAY 2024 00:54
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -816,15 +816,54 @@ Overfull \hbox (6.65903pt too wide) has occurred while \output is active
 [11
 
  <./pcunet_metrics.png>]
-LaTeX Font Info:    Trying to load font information for U+msa on input line 134.
+<unet_output.jpeg, id=331, 1606.0pt x 533.995pt>
+File: unet_output.jpeg Graphic file (type jpg)
+<use unet_output.jpeg>
+Package pdftex.def Info: unet_output.jpeg  used on input line 125.
+(pdftex.def)             Requested size: 342.2953pt x 113.8126pt.
+
+Overfull \hbox (6.65903pt too wide) has occurred while \output is active
+ [][]  
+ []
+
+[12
+
+ <./unet_output.jpeg>]
+<output_cunet.png, id=359, 854.2314pt x 277.5168pt>
+File: output_cunet.png Graphic file (type png)
+<use output_cunet.png>
+Package pdftex.def Info: output_cunet.png  used on input line 133.
+(pdftex.def)             Requested size: 342.2953pt x 111.20377pt.
+
+Overfull \hbox (6.65903pt too wide) has occurred while \output is active
+ [][]  
+ []
+
+[13
+
+ <./output_cunet.png>]
+<pcunet_output.jpeg, id=388, 1606.0pt x 533.995pt>
+File: pcunet_output.jpeg Graphic file (type jpg)
+<use pcunet_output.jpeg>
+Package pdftex.def Info: pcunet_output.jpeg  used on input line 141.
+(pdftex.def)             Requested size: 342.2953pt x 113.8126pt.
+
+Overfull \hbox (6.65903pt too wide) has occurred while \output is active
+ [][]  
+ []
+
+[14
+
+ <./pcunet_output.jpeg>]
+LaTeX Font Info:    Trying to load font information for U+msa on input line 159.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 134.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 159.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Trying to load font information for OT1+mathkerncmss on input line 134.
+LaTeX Font Info:    Trying to load font information for OT1+mathkerncmss on input line 159.
  (/usr/share/texlive/texmf-dist/tex/latex/sansmathaccent/ot1mathkerncmss.fd
 File: ot1mathkerncmss.fd 2020/01/31 Fontinst v1.933 font definitions for OT1/mathkerncmss.
 )
@@ -832,14 +871,14 @@ Overfull \hbox (6.65903pt too wide) has occurred while \output is active
  [][]  
  []
 
-[12
+[15
 
 ]
 Overfull \hbox (6.65903pt too wide) has occurred while \output is active
  [][]  
  []
 
-[13
+[16
 
 ]
 \tf@nav=\write6
@@ -856,18 +895,18 @@ Package rerunfilecheck Info: File `report.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 21874 strings out of 480171
- 427983 string characters out of 5894489
- 674110 words of memory out of 5000000
- 39328 multiletter control sequences out of 15000+600000
+ 21908 strings out of 480171
+ 428534 string characters out of 5894489
+ 674111 words of memory out of 5000000
+ 39352 multiletter control sequences out of 15000+600000
  476608 words of font info for 54 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
  128i,15n,122p,494b,637s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb>
-Output written on report.pdf (13 pages, 801537 bytes).
+Output written on report.pdf (16 pages, 1190968 bytes).
 PDF statistics:
- 417 PDF objects out of 1000 (max. 8388607)
- 368 compressed objects within 4 object streams
- 35 named destinations out of 1000 (max. 500000)
- 84 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 503 PDF objects out of 1000 (max. 8388607)
+ 446 compressed objects within 5 object streams
+ 41 named destinations out of 1000 (max. 500000)
+ 99 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -1,7 +1,7 @@
 # Fdb version 3
-["pdflatex"] 1714590577 "/home/shravan/Desktop/IITB/COMPUTER SCIENCE/Semester_4/CS736/Project/MIC_Project/report/report.tex" "report.pdf" "report" 1714590578
+["pdflatex"] 1714591455 "/home/shravan/Desktop/IITB/COMPUTER SCIENCE/Semester_4/CS736/Project/MIC_Project/report/report.tex" "report.pdf" "report" 1714591457
   "/etc/texmf/web2c/texmf.cnf" 1695632341 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/shravan/Desktop/IITB/COMPUTER SCIENCE/Semester_4/CS736/Project/MIC_Project/report/report.tex" 1714590577 6386 0aeac0fb82f74542af4ecf3e7142bd84 ""
+  "/home/shravan/Desktop/IITB/COMPUTER SCIENCE/Semester_4/CS736/Project/MIC_Project/report/report.tex" 1714591455 7060 88c9243ac5294c8a79deb9bbe30c6880 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -200,13 +200,16 @@
   "PDC.png" 1714587519 82703 3768a8cf533fd863a0102086888b627d ""
   "cunet.jpg" 1714586391 77938 0e38e0da84e13a4242359321b0c642f7 ""
   "cunet_metrics.png" 1714583908 184718 39e0797968c7e2b19e518d64b5fd3688 ""
+  "output_cunet.png" 1714591016 179714 f4784348e9a8bce6fc6519d4392487ff ""
   "pcunet_metrics.png" 1714583052 178243 655832415ef24f4227610fa3758f4b15 ""
-  "report.aux" 1714590578 3356 22a7849ee8692bc9c87c6516817d3b3d "pdflatex"
-  "report.nav" 1714590578 1388 37fb167c90003b6656a249083ce3750a "pdflatex"
-  "report.out" 1714590578 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "report.tex" 1714590577 6386 0aeac0fb82f74542af4ecf3e7142bd84 ""
+  "pcunet_output.jpeg" 1714591321 79745 e1f5f123fad97e1617fc3a33e4b02ff7 ""
+  "report.aux" 1714591456 3743 a5ae012e1874edd6dc352bdfac63a21d "pdflatex"
+  "report.nav" 1714591456 1667 223530e0d280496bcaab89de82b2e7ab "pdflatex"
+  "report.out" 1714591456 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "report.tex" 1714591455 7060 88c9243ac5294c8a79deb9bbe30c6880 ""
   "u-net-architecture.png" 1714584147 103270 96f5e828c1e83c930aa4a2bb91e64c10 ""
   "unet_metrics.png" 1714583079 165678 1a13561e7dc13b5c7a7d29e51b651f63 ""
+  "unet_output.jpeg" 1714591300 87103 10ec9fdcc1d30761efa9bf4ff62b88c6 ""
   (generated)
   "report.aux"
   "report.log"
